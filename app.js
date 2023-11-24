@@ -106,7 +106,6 @@ const loadingIcon = `<div class="loading-container">
 // loadingcon.forEach((elem) => {
 //   elem.innerHTML = loading1;
 // });
-
 const count = document.querySelector(".count");
 
 let currentProgress = 0;
@@ -114,40 +113,10 @@ let counter = 0;
 
 count.textContent = 0;
 
-
 const checkBoxes = document.querySelectorAll(".checkbox");
-
-
-
-const updatedProgress = () => {
-  counter = 0; 
-
-  checkBoxes.forEach((checkBox) => {
-    if (checkBox.checked) {
-      counter++;
-    }
-  });
-
-
-
-  currentProgress = Math.min(5, counter); 
-
-  const progressBar = document.querySelector(".bar");
-  progressBar.style.width = `${currentProgress * 20}%`; 
-
-  count.textContent = counter;
-
- 
-
-};
-
-checkBoxes.forEach((checkBox) => {
-  checkBox.addEventListener("change", updatedProgress);
-  
-});
-
+const carouselContainer = document.querySelector(".component-con");
+const carouselItems = document.querySelectorAll(".component");
 const contentShow = document.querySelectorAll(".com-content");
-
 let prevClickedComponent = null;
 
 const handleComponentClick = (event) => {
@@ -172,7 +141,7 @@ const handleComponentClick = (event) => {
 
 component.forEach((com) => {
   com.addEventListener("click", (event) => {
-    handleComponentClick(event); 
+    handleComponentClick(event);
   });
 });
 
@@ -183,11 +152,47 @@ document.body.addEventListener("click", (event) => {
     if (prevClickedComponent !== null) {
       prevClickedComponent.classList.remove("component-onclick");
       prevClickedComponent.querySelector(".com-content").style.height = "17px";
-      prevClickedComponent = null; 
+      prevClickedComponent = null;
     }
   }
 });
 
+const markStepCompleted = (index) => {
+  checkBoxes[index].checked = true;
+  counter++;
+  updateProgress();
+};
+
+const markStepIncomplete = (index) => {
+  checkBoxes[index].checked = false;
+  counter--;
+  updateProgress();
+};
+
+checkBoxes.forEach((checkBox, index) => {
+  checkBox.addEventListener("change", () => {
+    if (checkBox.checked) {
+      markStepCompleted(index);
+      // Expand the next incomplete step if available
+      const nextIncompleteStep = Array.from(carouselItems).find(
+        (item, i) => i > index && !item.classList.contains("component-onclick")
+      );
+      if (nextIncompleteStep) {
+        handleComponentClick({ currentTarget: nextIncompleteStep });
+      }
+    } else {
+      markStepIncomplete(index);
+    }
+  });
+});
+
+const progressBar = document.querySelector(".bar");
+
+const updateProgress = () => {
+  currentProgress = Math.min(5, counter);
+  progressBar.style.width = `${currentProgress * 20}%`;
+  count.textContent = counter;
+};
 
 
 const loadingcontainer = document.querySelectorAll(".loading-container");
@@ -214,7 +219,6 @@ loadingcontainer.forEach((elem) => {
       elem.innerHTML = loadingIcon;
     }
     elem.classList.toggle("loadingIcon");
-    // Call your showLoadingIcon function if needed
   });
 });
 
