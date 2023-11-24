@@ -217,6 +217,9 @@ loadingcontainer.forEach((elem) => {
     // Call your showLoadingIcon function if needed
   });
 });
+
+// 
+
 // function showLoadingIcon() {
 //   const loadingIcons = document.querySelectorAll(".loading-container .l-icon");
 
